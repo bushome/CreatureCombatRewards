@@ -21,7 +21,9 @@ excluded so they never pay.
 
 ## Build
 
-Requirements: Visual Studio 2022 with the "Desktop development with C++" workload, and Git.
+Requirements: Visual Studio 2022 or 2026 with the "Desktop development with C++" workload, and Git.
+The project uses whichever compiler toolset your Visual Studio ships with (v143 on 2022, v145 on 2026),
+so there is nothing to retarget.
 
 1. Run `setup.bat`. It clones the AsaApi source into `extern\AsaApi`.
 2. Copy `AsaApi.lib` into `extern\AsaApi\out_lib\`. It is in the `Lib` folder of the AsaApi release zip
@@ -37,6 +39,10 @@ Build against the AsaApi version your servers run. If the AsaApi source or `AsaA
 else, pass `/p:AsaApiDir=...` and `/p:AsaApiLib=...` to msbuild.
 
 ## Install
+
+The server machine needs a Microsoft Visual C++ x64 Redistributable at least as new as the Visual Studio
+the plugin was built with. A machine with that Visual Studio installed already has it; otherwise install
+the latest one from Microsoft.
 
 1. Copy the `out\CreatureCombatRewards` folder to `ShooterGame\Binaries\Win64\ArkApi\Plugins\` on each server.
    The folder and the DLL must keep the same name.
