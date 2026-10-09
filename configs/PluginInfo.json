@@ -1,0 +1,9 @@
+{
+  "FullName": "Creature Combat Rewards",
+  "Description": "Awards ArkShop points for killing wild creatures, by creature type and level range",
+  "Version": 1.0,
+  "MinApiVersion": 1.19,
+  "Dependencies": [
+    "ArkShop"
+  ]
+}
