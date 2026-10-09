@@ -12,6 +12,7 @@
   <ItemGroup>
     <ClInclude Include="src\RewardLogic.h" />
     <ClInclude Include="src\ShopBridge.h" />
+    <ClInclude Include="compat\fmt\format.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="configs\config.json" />
@@ -61,11 +62,11 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>PROJECT_NAME="$(ProjectName)";NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS;_SILENCE_ALL_CXX20_DEPRECATION_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PROJECT_NAME="$(ProjectName)";NDEBUG;_WINDOWS;_USRDLL;_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS;_SILENCE_ALL_CXX20_DEPRECATION_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(AsaApiDir)AsaApi\Core\Public\;$(AsaApiDir)AsaApi\Core\Public\API\UE\;$(MSBuildProjectDirectory)\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(AsaApiDir)AsaApi\Core\Public\;$(AsaApiDir)AsaApi\Core\Public\API\UE\;$(MSBuildProjectDirectory)\src\;$(MSBuildProjectDirectory)\compat\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

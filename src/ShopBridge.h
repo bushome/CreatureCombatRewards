@@ -46,7 +46,8 @@ namespace CombatRewards::Shop
 			return api;
 		}
 
-		api.add_points = reinterpret_cast<AddPointsFn>(GetProcAddress(module, kAddPointsSymbol));
+		// Cast through void* so MSVC does not flag the FARPROC -> typed function pointer conversion (C4191).
+		api.add_points = reinterpret_cast<AddPointsFn>(reinterpret_cast<void*>(GetProcAddress(module, kAddPointsSymbol)));
 		api.status = api.add_points != nullptr ? Status::Ready : Status::SymbolNotFound;
 		return api;
 	}

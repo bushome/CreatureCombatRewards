@@ -33,7 +33,8 @@ so there is nothing to retarget.
 The result is `out\CreatureCombatRewards\`, containing `CreatureCombatRewards.dll`, `PluginInfo.json` and `config.json`.
 
 No vcpkg packages and no ArkShop import library are needed. ArkShop's `AddPoints` function is looked up
-in the loaded `ArkShop.dll` at runtime.
+in the loaded `ArkShop.dll` at runtime. AsaApi's headers ask for an `fmt/format.h`; `compat\fmt\format.h`
+answers that by pointing at the fmt copy AsaApi already bundles.
 
 Build against the AsaApi version your servers run. If the AsaApi source or `AsaApi.lib` live somewhere
 else, pass `/p:AsaApiDir=...` and `/p:AsaApiLib=...` to msbuild.
@@ -196,5 +197,6 @@ putting it on a server.
 | `src\Main.cpp` | Death hook, player crediting, notifications, payouts, commands. |
 | `src\RewardLogic.h` | Config parsing, creature matching, level ranges, payout queue. No game dependencies. |
 | `src\ShopBridge.h` | Runtime lookup of ArkShop's `AddPoints`. |
+| `compat\fmt\format.h` | Lets AsaApi's headers compile without installing fmt through vcpkg. |
 | `configs\config.json` | Default configuration. |
 | `configs\PluginInfo.json` | Plugin metadata read by AsaApi. |
