@@ -47,12 +47,18 @@
         "Xenomorph_Character_BP*"
       ],
       "LevelRanges": [
-        { "MinLevel": 1, "MaxLevel": 29, "Points": 5 },
-        { "MinLevel": 30, "MaxLevel": 59, "Points": 10 },
-        { "MinLevel": 60, "MaxLevel": 89, "Points": 15 },
-        { "MinLevel": 90, "MaxLevel": 119, "Points": 20 },
-        { "MinLevel": 120, "MaxLevel": 149, "Points": 25 },
-        { "MinLevel": 150, "Points": 30 }
+        { "MinLevel": 1, "MaxLevel": 29, "Points": 3 },
+        { "MinLevel": 30, "MaxLevel": 59, "Points": 5 },
+        { "MinLevel": 60, "MaxLevel": 89, "Points": 8 },
+        { "MinLevel": 90, "MaxLevel": 119, "Points": 10 },
+        { "MinLevel": 120, "MaxLevel": 149, "Points": 13 },
+        { "MinLevel": 150, "MaxLevel": 179, "Points": 15 },
+        { "MinLevel": 180, "MaxLevel": 209, "Points": 18 },
+        { "MinLevel": 210, "MaxLevel": 239, "Points": 20 },
+        { "MinLevel": 240, "MaxLevel": 269, "Points": 23 },
+        { "MinLevel": 270, "MaxLevel": 299, "Points": 25 },
+        { "MinLevel": 300, "MaxLevel": 329, "Points": 28 },
+        { "MinLevel": 330, "Points": 30 }
       ]
     },
     {
@@ -64,11 +70,17 @@
       ],
       "LevelRanges": [
         { "MinLevel": 1, "MaxLevel": 29, "Points": 1 },
-        { "MinLevel": 30, "MaxLevel": 59, "Points": 2 },
-        { "MinLevel": 60, "MaxLevel": 89, "Points": 3 },
-        { "MinLevel": 90, "MaxLevel": 119, "Points": 4 },
-        { "MinLevel": 120, "MaxLevel": 149, "Points": 5 },
-        { "MinLevel": 150, "Points": 6 }
+        { "MinLevel": 30, "MaxLevel": 59, "Points": 1 },
+        { "MinLevel": 60, "MaxLevel": 89, "Points": 2 },
+        { "MinLevel": 90, "MaxLevel": 119, "Points": 2 },
+        { "MinLevel": 120, "MaxLevel": 149, "Points": 3 },
+        { "MinLevel": 150, "MaxLevel": 179, "Points": 3 },
+        { "MinLevel": 180, "MaxLevel": 209, "Points": 4 },
+        { "MinLevel": 210, "MaxLevel": 239, "Points": 4 },
+        { "MinLevel": 240, "MaxLevel": 269, "Points": 5 },
+        { "MinLevel": 270, "MaxLevel": 299, "Points": 5 },
+        { "MinLevel": 300, "MaxLevel": 329, "Points": 6 },
+        { "MinLevel": 330, "Points": 6 }
       ]
     }
   ],
