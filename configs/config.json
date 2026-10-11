@@ -44,6 +44,7 @@
         "Basilisk_Character_BP",
         "Crab_Character_BP",
         "RockDrake_Character_BP",
+        "Dreadnoughtus_Character_BP",
         "Xenomorph_Character_BP*"
       ],
       "LevelRanges": [
@@ -66,7 +67,8 @@
       "Creatures": [
         "*_Character_BP_Corrupt",
         "Chalico_Character_BP",
-        "Bigfoot_Character_BP"
+        "Bigfoot_Character_BP",
+        "Megatherium_Character_BP"
       ],
       "LevelRanges": [
         { "MinLevel": 1, "MaxLevel": 29, "Points": 1 },
@@ -81,6 +83,46 @@
         { "MinLevel": 270, "MaxLevel": 299, "Points": 5 },
         { "MinLevel": 300, "MaxLevel": 329, "Points": 6 },
         { "MinLevel": 330, "Points": 6 }
+      ]
+    },
+    {
+      "Name": "Defensive",
+      "Creatures": [
+        "Trike_Character_BP",
+        "Stego_Character_BP",
+        "Sauropod_Character_BP",
+        "Paracer_Character_BP",
+        "Ankylo_Character_BP",
+        "Mammoth_Character_BP",
+        "Rhino_Character_BP",
+        "Pachyrhino_Character_BP",
+        "Pachy_Character_BP",
+        "Doed_Character_BP",
+        "Iguanodon_Character_BP",
+        "Beaver_Character_BP"
+      ],
+      "LevelRanges": [
+        { "MinLevel": 1, "MaxLevel": 29, "Points": 1 },
+        { "MinLevel": 30, "MaxLevel": 59, "Points": 1 },
+        { "MinLevel": 60, "MaxLevel": 89, "Points": 1 },
+        { "MinLevel": 90, "MaxLevel": 119, "Points": 1 },
+        { "MinLevel": 120, "MaxLevel": 149, "Points": 2 },
+        { "MinLevel": 150, "MaxLevel": 179, "Points": 2 },
+        { "MinLevel": 180, "MaxLevel": 209, "Points": 2 },
+        { "MinLevel": 210, "MaxLevel": 239, "Points": 2 },
+        { "MinLevel": 240, "MaxLevel": 269, "Points": 3 },
+        { "MinLevel": 270, "MaxLevel": 299, "Points": 3 },
+        { "MinLevel": 300, "MaxLevel": 329, "Points": 3 },
+        { "MinLevel": 330, "Points": 3 }
+      ]
+    },
+    {
+      "Name": "Colossal",
+      "Creatures": [
+        "Titanosaur_Character_BP"
+      ],
+      "LevelRanges": [
+        { "MinLevel": 1, "Points": 50 }
       ]
     }
   ],

@@ -4,8 +4,10 @@
 //   cl /std:c++20 /EHsc /I extern\AsaApi\AsaApi\Core\Public /I src tests\logic_tests.cpp && logic_tests.exe configs\config.json
 //   clang++ -std=c++20 -I extern/AsaApi/AsaApi/Core/Public -I src tests/logic_tests.cpp -o logic_tests && ./logic_tests configs/config.json
 //
-// The optional argument is a config.json to validate; the shipped one is also checked against the
-// expectations at the bottom of this file.
+// The optional argument is a config.json to validate. Add --shipped after it to also check the file
+// against the expectations for the shipped config at the bottom of this file:
+//   logic_tests.exe configs\config.json --shipped
+// configs\CommentedConfig.json holds the same values, so it must pass the same check.
 
 #include <fstream>
 #include <iostream>
@@ -385,25 +387,65 @@ static void TestConfigFile(const std::string& path, bool shipped_expectations)
 		return;
 
 	CHECK(settings.warnings.empty());
-	CHECK(settings.creature_types.size() == 2);
+	CHECK(settings.creature_types.size() == 4);
+	CHECK(settings.excluded.size() == 30);
+	CHECK(settings.fallback_carnivore_type == 1);  // Aggressive
+	CHECK(settings.fallback_herbivore_type == -1); // no reward
 
+	// The shipped level ranges are built for a wild level cap of 300: twelve 30-level steps, the last
+	// of which (330 and above) also catches tek, cave and OSD creatures that spawn over the cap.
 	struct Expectation { CreatureInfo creature; const char* type; int points; };
 	const Expectation expectations[] = {
-		{ Creature({ "Rex_Character_BP_C", "Dino_Character_BP_C" }, "Rex", true, 145), "Threatening", 25 },
-		{ Creature({ "MegaRaptor_Character_BP_C", "Raptor_Character_BP_C", "Dino_Character_BP_C" }, "Elite Raptor", true, 12), "Threatening", 5 },
-		{ Creature({ "Gigant_Character_BP_C", "Dino_Character_BP_C" }, "Gigant", true, 150), "Threatening", 30 },
-		{ Creature({ "Wyvern_Character_BP_Fire_C", "Wyvern_Character_BP_Base_C", "Dino_Character_BP_C" }, "Wyvern", true, 190), "Threatening", 30 },
-		{ Creature({ "Xenomorph_Character_BP_Female_C", "Dino_Character_BP_C" }, "Xenomorph", true, 75), "Threatening", 15 },
-		{ Creature({ "Raptor_Character_BP_C", "Dino_Character_BP_C" }, "Raptor", true, 35), "Aggressive", 2 },
-		{ Creature({ "Carno_Character_BP_C", "Dino_Character_BP_C" }, "Carno", true, 150), "Aggressive", 6 },
+		// Threatening: 3 to 30.
+		{ Creature({ "Rex_Character_BP_C", "Dino_Character_BP_C" }, "Rex", true, 145), "Threatening", 13 },
+		{ Creature({ "MegaRaptor_Character_BP_C", "Raptor_Character_BP_C", "Dino_Character_BP_C" }, "Elite Raptor", true, 12), "Threatening", 3 },
+		{ Creature({ "Gigant_Character_BP_C", "Dino_Character_BP_C" }, "Gigant", true, 150), "Threatening", 15 },
+		{ Creature({ "Gigant_Character_BP_C", "Dino_Character_BP_C" }, "Gigant", true, 299), "Threatening", 25 },
+		{ Creature({ "Gigant_Character_BP_C", "Dino_Character_BP_C" }, "Gigant", true, 300), "Threatening", 28 },
+		{ Creature({ "Gigant_Character_BP_C", "Dino_Character_BP_C" }, "Gigant", true, 329), "Threatening", 28 },
+		{ Creature({ "Gigant_Character_BP_C", "Dino_Character_BP_C" }, "Gigant", true, 330), "Threatening", 30 },
+		{ Creature({ "Wyvern_Character_BP_Fire_C", "Wyvern_Character_BP_Base_C", "Dino_Character_BP_C" }, "Wyvern", true, 190), "Threatening", 18 },
+		{ Creature({ "Wyvern_Character_BP_Fire_C", "Wyvern_Character_BP_Base_C", "Dino_Character_BP_C" }, "Wyvern", true, 380), "Threatening", 30 },
+		{ Creature({ "Xenomorph_Character_BP_Female_C", "Dino_Character_BP_C" }, "Xenomorph", true, 75), "Threatening", 8 },
+		{ Creature({ "Rex_Character_BP_C", "Dino_Character_BP_C" }, "Rex", true, 650), "Threatening", 30 }, // cave or OSD level
+		// Herbivores listed as Threatening pay despite the diet.
+		{ Creature({ "Therizino_Character_BP_C", "Dino_Character_BP_C" }, "Therizinosaurus", false, 300), "Threatening", 28 },
+		{ Creature({ "Dreadnoughtus_Character_BP_C", "Dino_Character_BP_C" }, "Dreadnoughtus", false, 250), "Threatening", 23 },
+
+		// Aggressive: 1 to 6. Unlisted carnivores land here through the fallback.
+		{ Creature({ "Raptor_Character_BP_C", "Dino_Character_BP_C" }, "Raptor", true, 35), "Aggressive", 1 },
+		{ Creature({ "Carno_Character_BP_C", "Dino_Character_BP_C" }, "Carno", true, 150), "Aggressive", 3 },
 		{ Creature({ "Piranha_Character_BP_C", "Dino_Character_BP_C" }, "Piranha", true, 5), "Aggressive", 1 },
-		{ Creature({ "Trike_Character_BP_Corrupt_C", "Trike_Character_BP_C", "Dino_Character_BP_C" }, "Trike", false, 95), "Aggressive", 4 },
-		{ Creature({ "Chalico_Character_BP_C", "Dino_Character_BP_C" }, "Chalicotherium", false, 120), "Aggressive", 5 },
-		{ Creature({ "Trike_Character_BP_C", "Dino_Character_BP_C" }, "Trike", false, 150), "", 0 },
+		{ Creature({ "Direwolf_Character_BP_C", "Dino_Character_BP_Pack_C" }, "Direwolf", true, 320), "Aggressive", 6 },
+		{ Creature({ "Chalico_Character_BP_C", "Dino_Character_BP_C" }, "Chalicotherium", false, 120), "Aggressive", 3 },
+		{ Creature({ "Megatherium_Character_BP_C", "Dino_Character_BP_C" }, "Megatherium", false, 200), "Aggressive", 4 },
+		// A Yeti is built on the Gigantopithecus blueprint, and a level over the cap pays no more than the cap.
+		{ Creature({ "Yeti_Character_BP_C", "Bigfoot_Character_BP_C" }, "Bigfoot", false, 500), "Aggressive", 6 },
+		// A corrupted Trike matches the Aggressive wildcard on its own class before its parent's Defensive entry.
+		{ Creature({ "Trike_Character_BP_Corrupt_C", "Trike_Character_BP_C", "Dino_Character_BP_C" }, "Trike", false, 95), "Aggressive", 2 },
+
+		// Defensive: 1 to 3. Herbivores that fight back when hit.
+		{ Creature({ "Trike_Character_BP_C", "Dino_Character_BP_C" }, "Trike", false, 150), "Defensive", 2 },
+		{ Creature({ "Stego_Character_BP_C", "Dino_Character_BP_C" }, "Stego", false, 40), "Defensive", 1 },
+		{ Creature({ "BionicStego_Character_BP_C", "Stego_Character_BP_C", "Dino_Character_BP_C" }, "Stego", false, 360), "Defensive", 3 },
+		{ Creature({ "Sauropod_Character_BP_C", "Dino_Character_BP_C" }, "Sauropod", false, 300), "Defensive", 3 },
+		{ Creature({ "Iguanodon_Character_BP_C", "Dino_Character_BP_C" }, "Iguanodon", false, 50), "Defensive", 1 },
+		{ Creature({ "Beaver_Character_BP_C", "Dino_Character_BP_C" }, "Beaver", false, 130), "Defensive", 2 },
+
+		// Colossal: one flat payout, because a wild Titanosaur's level is always very low.
+		{ Creature({ "Titanosaur_Character_BP_C", "Dino_Character_BP_C" }, "Titanosaur", false, 3), "Colossal", 50 },
+		{ Creature({ "Titanosaur_Character_BP_C", "Dino_Character_BP_C" }, "Titanosaur", false, 300), "Colossal", 50 },
+
+		// Unlisted herbivores pay nothing.
 		{ Creature({ "Para_Character_BP_C", "Dino_Character_BP_C" }, "Para", false, 150), "", 0 },
+		{ Creature({ "Moschops_Character_BP_C", "Dino_Character_BP_C" }, "Moschops", false, 190), "", 0 },
+		{ Creature({ "Diplodocus_Character_BP_C", "Dino_Character_BP_C" }, "Diplodocus", false, 100), "", 0 },
+
+		// Excluded creatures pay nothing, including carnivores the fallback would otherwise cover.
 		{ Creature({ "Coel_Character_BP_C", "Dino_Character_BP_C" }, "Coel", true, 150), "", 0 },
 		{ Creature({ "Salmon_Character_BP_C", "Dino_Character_BP_C" }, "Salmon", true, 150), "", 0 },
 		{ Creature({ "Ptero_Character_BP_C", "Dino_Character_BP_C" }, "Ptera", true, 150), "", 0 },
+		{ Creature({ "Hesperornis_Character_BP_C", "Dino_Character_BP_C" }, "Hesperornis", true, 50), "", 0 },
 		{ Creature({ "Dodo_Character_BP_C", "Dino_Character_BP_C" }, "Dodo", false, 150), "", 0 },
 		{ Creature({ "Bee_Character_BP_C", "Dino_Character_BP_C" }, "Bee", true, 150), "", 0 },
 	};

@@ -58,6 +58,11 @@ in, and queued points are paid out before the old version unloads.
 
 Comments (`//` and `/* */`) are allowed in this file.
 
+`configs\CommentedConfig.json` holds the same settings and values as `config.json`, with an explanation
+on every setting and the in-game name beside every creature entry. It is a reference copy: the plugin
+only reads `config.json`. Because comments are allowed, you can also copy it over `config.json` to keep
+the notes on the server.
+
 ### General
 
 | Setting | Default | Meaning |
@@ -106,6 +111,23 @@ A list of types. You can rename them, add more, or remove them.
   "this level and above". A level that no range covers pays nothing.
 - `Creatures`: which creatures belong to the type. See the matching rules below.
 
+The shipped config defines four types:
+
+| Type | Holds | Pays |
+|---|---|---|
+| `Threatening` | Apex predators, alphas, wyverns, Rock Drakes and Reapers, plus the Therizinosaur and Dreadnoughtus. | 3 to 30, by level |
+| `Aggressive` | Corrupted creatures, Chalicotherium, Gigantopithecus and Megatherium, plus every unlisted carnivore through `Fallback`. | 1 to 6, by level |
+| `Defensive` | Herbivores that leave players alone until they are hit, such as Triceratops, Stegosaurus and Brontosaurus. | 1 to 3, by level |
+| `Colossal` | Titanosaur. | 50, at any level |
+
+The shipped level ranges are built for a wild level cap of 300: twelve 30-level steps, the last of which
+covers level 330 and above. Creatures that spawn over the cap (tek creatures, wyverns, Rock Drakes, and
+cave and OSD spawns) all land in that last step, so they pay no more than a creature just above the cap.
+For a different cap, rescale the `MinLevel` and `MaxLevel` values.
+
+The Titanosaur gets one flat payout because wild ones spawn at a very low level and their health and
+damage do not grow with it, so paying by level would give it almost nothing.
+
 ### Excluded
 
 Creatures that never pay, written the same way as `Creatures`. The shipped list holds fish, small passive
@@ -122,8 +144,8 @@ What to do with a creature that is in neither `Excluded` nor any type's `Creatur
 
 This is what lets modded predators pay without being listed. Diet is only a rough stand-in for
 aggression: some carnivores are passive (fish, otters, Pteranodons), which is what `Excluded` is for, and
-some herbivores attack on sight (Therizinosaur, Chalicotherium), which is why those are listed explicitly.
-For a strict whitelist, set both values to `""`.
+some herbivores attack on sight (Therizinosaur, Chalicotherium) or fight back when hit (Triceratops,
+Stegosaurus), which is why those are listed explicitly. For a strict whitelist, set both values to `""`.
 
 ### How creatures are matched
 
@@ -152,12 +174,15 @@ then the grandparent, and so on. So:
 Set `LogKills` to `true`, reload, and kill the creature. `ArkApi.log` shows exactly what the plugin saw:
 
 ```
-Kill by 0002a1b2c3...: "Rex" class=Rex_Character_BP_C parent=Dino_Character_BP_C tag=Rex level=145 diet=carnivore -> type=Threatening (listed: Rex_Character_BP) points=25
+Kill by 0002a1b2c3...: "Rex" class=Rex_Character_BP_C parent=Dino_Character_BP_C tag=Rex level=145 diet=carnivore -> type=Threatening (listed: Rex_Character_BP) points=13
 Kill by 0002a1b2c3...: "Coelacanth" class=Coel_Character_BP_C parent=Dino_Character_BP_C tag=Coel level=20 diet=carnivore -> type=- (excluded: Coel_Character_BP) points=0
-Kill by 0002a1b2c3...: "Raptor" class=Raptor_Character_BP_C parent=Dino_Character_BP_C tag=Raptor level=35 diet=carnivore -> type=Aggressive (fallback) points=2
+Kill by 0002a1b2c3...: "Raptor" class=Raptor_Character_BP_C parent=Dino_Character_BP_C tag=Raptor level=35 diet=carnivore -> type=Aggressive (fallback) points=1
+Kill by 0002a1b2c3...: "Parasaur" class=Para_Character_BP_C parent=Dino_Character_BP_C tag=Para level=50 diet=herbivore -> type=- (unlisted) points=0
 ```
 
-`fallback` lines are the ones to review: they are creatures the config does not mention.
+`fallback` lines are the ones to review: they are creatures the config does not mention. `unlisted` lines
+are creatures the config does not mention and the fallback does not pay for; add one to a type's
+`Creatures` if it should pay.
 
 ## Commands
 
@@ -190,6 +215,14 @@ logic_tests.exe configs\config.json
 Passing a config file validates it and prints any warnings, which is a quick way to check an edit before
 putting it on a server.
 
+Add `--shipped` after the path to also check the file against the payouts expected from the shipped
+config. Run it on both shipped files after changing either, since they must hold the same values:
+
+```
+logic_tests.exe configs\config.json --shipped
+logic_tests.exe configs\CommentedConfig.json --shipped
+```
+
 ## Files
 
 | File | Purpose |
@@ -199,4 +232,6 @@ putting it on a server.
 | `src\ShopBridge.h` | Runtime lookup of ArkShop's `AddPoints`. |
 | `compat\fmt\format.h` | Lets AsaApi's headers compile without installing fmt through vcpkg. |
 | `configs\config.json` | Default configuration. |
+| `configs\CommentedConfig.json` | The same configuration with every setting and creature entry explained. Not read by the plugin. |
 | `configs\PluginInfo.json` | Plugin metadata read by AsaApi. |
+| `tests\logic_tests.cpp` | Stand-alone tests for `RewardLogic.h` and the shipped config. |

@@ -64,7 +64,8 @@
     // Unlisted carnivores, including modded predators, pay as this type.
     "Carnivores": "Aggressive",
 
-    // Unlisted herbivores pay nothing. Herbivores that attack on sight are listed by name below.
+    // Unlisted herbivores pay nothing. Herbivores that attack on sight, or fight back when hit,
+    // are listed by name below.
     "Herbivores": ""
   },
 
@@ -112,6 +113,7 @@
         "Basilisk_Character_BP",            // Basilisk
         "Crab_Character_BP",                // Karkinos
         "RockDrake_Character_BP",           // Rock Drake
+        "Dreadnoughtus_Character_BP",       // Dreadnoughtus: a territorial herbivore that turns on large tames
         "Xenomorph_Character_BP*"           // Reapers. The wildcard covers the King and Queen classes
       ],
 
@@ -143,9 +145,10 @@
       // Everything else that attacks players. Unlisted carnivores also land here through Fallback.
       "Name": "Aggressive",
       "Creatures": [
-        "*_Character_BP_Corrupt",  // Corrupted creatures, which are what OSD waves spawn
-        "Chalico_Character_BP",    // Chalicotherium: a herbivore, but it attacks on sight
-        "Bigfoot_Character_BP"     // Gigantopithecus
+        "*_Character_BP_Corrupt",    // Corrupted creatures, which are what OSD waves spawn
+        "Chalico_Character_BP",      // Chalicotherium: a herbivore, but it attacks on sight
+        "Bigfoot_Character_BP",      // Gigantopithecus, and the Yeti that is built on it
+        "Megatherium_Character_BP"   // Megatherium: enraged by insects, including ones you ride or carry
       ],
 
       // Same level steps as Threatening, topping out at 6 points. Points are whole numbers, so
@@ -163,6 +166,55 @@
         { "MinLevel": 270, "MaxLevel": 299, "Points": 5 },
         { "MinLevel": 300, "MaxLevel": 329, "Points": 6 },  // The wild level cap and just above it
         { "MinLevel": 330, "Points": 6 }                    // No MaxLevel: level 330 and above
+      ]
+    },
+    {
+      // Herbivores that leave players alone until they are hit, then fight back. The player
+      // chooses to start these fights, so they pay less than Aggressive.
+      "Name": "Defensive",
+      "Creatures": [
+        "Trike_Character_BP",       // Triceratops
+        "Stego_Character_BP",       // Stegosaurus
+        "Sauropod_Character_BP",    // Brontosaurus
+        "Paracer_Character_BP",     // Paraceratherium
+        "Ankylo_Character_BP",      // Ankylosaurus
+        "Mammoth_Character_BP",     // Mammoth
+        "Rhino_Character_BP",       // Woolly Rhino
+        "Pachyrhino_Character_BP",  // Pachyrhinosaurus
+        "Pachy_Character_BP",       // Pachycephalosaurus
+        "Doed_Character_BP",        // Doedicurus
+        "Iguanodon_Character_BP",   // Iguanodon: fights back with a fast attack
+        "Beaver_Character_BP"       // Castoroides: nearby ones join in when one is hit or a dam is looted
+      ],
+
+      // Same level steps as Threatening, topping out at 3 points, which is half of what Aggressive
+      // pays. Points are whole numbers, so they rise every fourth step.
+      "LevelRanges": [
+        { "MinLevel": 1, "MaxLevel": 29, "Points": 1 },
+        { "MinLevel": 30, "MaxLevel": 59, "Points": 1 },
+        { "MinLevel": 60, "MaxLevel": 89, "Points": 1 },
+        { "MinLevel": 90, "MaxLevel": 119, "Points": 1 },
+        { "MinLevel": 120, "MaxLevel": 149, "Points": 2 },
+        { "MinLevel": 150, "MaxLevel": 179, "Points": 2 },
+        { "MinLevel": 180, "MaxLevel": 209, "Points": 2 },
+        { "MinLevel": 210, "MaxLevel": 239, "Points": 2 },
+        { "MinLevel": 240, "MaxLevel": 269, "Points": 3 },
+        { "MinLevel": 270, "MaxLevel": 299, "Points": 3 },
+        { "MinLevel": 300, "MaxLevel": 329, "Points": 3 },  // The wild level cap and just above it
+        { "MinLevel": 330, "Points": 3 }                    // No MaxLevel: level 330 and above
+      ]
+    },
+    {
+      // Rare giants with a huge health pool that hit hard once the fight starts.
+      "Name": "Colossal",
+      "Creatures": [
+        "Titanosaur_Character_BP"   // Titanosaur
+      ],
+
+      // One flat payout. A wild Titanosaur only spawns at a very low level and its health and
+      // damage do not grow with level, so paying by level would give it almost nothing.
+      "LevelRanges": [
+        { "MinLevel": 1, "Points": 50 }                      // No MaxLevel: every level
       ]
     }
   ],
