@@ -7,7 +7,7 @@
 // The optional argument is a config.json to validate. Add --shipped after it to also check the file
 // against the expectations for the shipped config at the bottom of this file:
 //   logic_tests.exe configs\config.json --shipped
-// configs\CommentedConfig.json holds the same values, so it must pass the same check.
+// configs\config.commented.json holds the same values, so it must pass the same check.
 
 #include <fstream>
 #include <iostream>

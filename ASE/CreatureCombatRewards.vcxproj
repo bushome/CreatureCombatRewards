@@ -12,17 +12,17 @@
   <ItemGroup>
     <ClInclude Include="src\RewardLogic.h" />
     <ClInclude Include="src\ShopBridge.h" />
-    <ClInclude Include="compat\fmt\format.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="configs\config.json" />
+    <None Include="configs\config.commented.json" />
     <None Include="configs\PluginInfo.json" />
     <None Include="README.md" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{AA2A983D-3DCD-4745-88C4-D105A825446A}</ProjectGuid>
+    <ProjectGuid>{81793427-1C5C-40CE-B59B-19C62DA21469}</ProjectGuid>
     <RootNamespace>CreatureCombatRewards</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>CreatureCombatRewards</ProjectName>
@@ -31,30 +31,21 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <!-- Use whichever toolset the installed Visual Studio ships with: v143 on VS 2022, v145 on VS 2026. -->
-    <PlatformToolset Condition="'$(DefaultPlatformToolset)' != ''">$(DefaultPlatformToolset)</PlatformToolset>
-    <PlatformToolset Condition="'$(DefaultPlatformToolset)' == ''">v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <ImportGroup Label="ExtensionSettings">
-  </ImportGroup>
-  <ImportGroup Label="Shared">
-  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <PropertyGroup Label="UserMacros">
-    <!-- Where the AsaApi source tree and AsaApi.lib live. Override either one on the msbuild command
-         line (/p:AsaApiDir=...) or as an environment variable if yours are somewhere else. -->
-    <AsaApiDir Condition="'$(AsaApiDir)' == ''">$(MSBuildProjectDirectory)\extern\AsaApi\</AsaApiDir>
-    <AsaApiLib Condition="'$(AsaApiLib)' == ''">$(AsaApiDir)out_lib\AsaApi.lib</AsaApiLib>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <!-- out\CreatureCombatRewards\ ends up holding exactly what goes into ArkApi\Plugins\CreatureCombatRewards\ -->
-    <OutDir>$(MSBuildProjectDirectory)\out\$(ProjectName)\</OutDir>
-    <IntDir>$(MSBuildProjectDirectory)\out\obj\</IntDir>
+    <OutDir>$(SolutionDir)out\</OutDir>
+    <IntDir>$(OutDir)$(Platform)\</IntDir>
+  </PropertyGroup>
+  <!-- No vcpkg packages: ArkServerApi bundles the fmt copy its headers use. -->
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnableManifest>false</VcpkgEnableManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -66,7 +57,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(AsaApiDir)AsaApi\Core\Public\;$(AsaApiDir)AsaApi\Core\Public\API\UE\;$(MSBuildProjectDirectory)\src\;$(MSBuildProjectDirectory)\compat\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)extern\AseApi\version\Core\Public\;$(ProjectDir)src\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -74,24 +65,27 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <ImportLibrary>$(IntDir)$(TargetName).lib</ImportLibrary>
-      <AdditionalDependencies>$(AsaApiLib);$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <!-- ArkShop.dll is not linked: its AddPoints export is looked up at runtime (see src\ShopBridge.h). -->
+      <AdditionalDependencies>$(SolutionDir)extern\AseApi\out_lib\ArkApi.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>if exist "$(TargetDir)$(TargetFileName).arkapi" del /q "$(TargetDir)$(TargetFileName).arkapi"</Command>
+      <Command>if exist "$(TargetDir)$(TargetFileName).ArkApi" del /q "$(TargetDir)$(TargetFileName).ArkApi"</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy /y "$(TargetDir)$(TargetFileName)" "$(TargetDir)$(TargetFileName).arkapi"
-copy /y "$(MSBuildProjectDirectory)\configs\PluginInfo.json" "$(TargetDir)PluginInfo.json"
-copy /y "$(MSBuildProjectDirectory)\configs\config.json" "$(TargetDir)config.json"</Command>
+      <Command>copy /y "$(TargetDir)$(TargetFileName)" "$(TargetDir)$(TargetFileName).ArkApi"
+if not exist "$(TargetDir)CreatureCombatRewards" mkdir "$(TargetDir)CreatureCombatRewards"
+copy /y "$(TargetDir)$(TargetFileName)" "$(TargetDir)CreatureCombatRewards\"
+copy /y "$(TargetDir)$(TargetName).pdb" "$(TargetDir)CreatureCombatRewards\"
+copy /y "$(ProjectDir)configs\PluginInfo.json" "$(TargetDir)CreatureCombatRewards\"
+copy /y "$(ProjectDir)configs\config.json" "$(TargetDir)CreatureCombatRewards\"
+copy /y "$(ProjectDir)configs\config.commented.json" "$(TargetDir)CreatureCombatRewards\"</Command>
+      <Message>Assembling out\CreatureCombatRewards\ plugin folder</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-  </ImportGroup>
-  <!-- Fail early with a readable message if AsaApi has not been set up yet. -->
-  <Target Name="CheckAsaApi" BeforeTargets="PrepareForBuild">
-    <Error Condition="!Exists('$(AsaApiDir)AsaApi\Core\Public\API\ARK\Ark.h')" Text="AsaApi headers not found under $(AsaApiDir). Run setup.bat, or clone https://github.com/ArkServerApi/AsaApi into extern\AsaApi." />
-    <Error Condition="!Exists('$(AsaApiLib)')" Text="AsaApi.lib not found at $(AsaApiLib). Copy it from the Lib folder of the AsaApi release zip into extern\AsaApi\out_lib, or build extern\AsaApi\AsaApi.sln (Release, x64)." />
+  <!-- Fail early with a readable message if the AseApi submodule is missing. -->
+  <Target Name="CheckAseApi" BeforeTargets="PrepareForBuild">
+    <Error Condition="!Exists('$(SolutionDir)extern\AseApi\version\Core\Public\API\ARK\Ark.h')" Text="AseApi headers not found. Run: git submodule update --init --recursive" />
+    <Error Condition="!Exists('$(SolutionDir)extern\AseApi\out_lib\ArkApi.lib')" Text="ArkApi.lib not found in extern\AseApi\out_lib. It ships in the AseApi repo; run: git submodule update --init --recursive" />
   </Target>
 </Project>

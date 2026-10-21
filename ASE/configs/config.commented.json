@@ -1,0 +1,324 @@
+// CreatureCombatRewards - commented configuration.
+//
+// This file holds the same settings and values as config.json, with an explanation on each one.
+// The plugin only reads config.json. Comments are allowed there too, so you can copy this file
+// over config.json if you prefer to keep the notes.
+//
+// After editing config.json, run CreatureCombatRewards.Reload (RCON, or the in-game console as an
+// admin) to apply it without a restart. If the file has a mistake, the old settings stay active
+// and the error is written to ArkApi.log.
+{
+  // Payout timing, the global multiplier, tame kills and logging.
+  "General": {
+    // How often, in seconds, queued points are handed to ArkShop. Batching keeps a busy fight
+    // from turning into dozens of database writes and "you received points" chat lines.
+    // 0 pays on every kill. Whole number, cannot be negative.
+    "PayoutIntervalSeconds": 30,
+
+    // Multiplies every payout, rounded to the nearest whole point. 2.0 gives double points,
+    // 0.5 gives half. 0 turns all payouts off. Cannot be negative.
+    "PointsMultiplier": 1.0,
+
+    // false: only kills made by a player on foot or riding a tame pay out.
+    // true: a kill by an unridden tame is credited to the nearest living tribe member within
+    // TameKillMaxDistance.
+    "RewardUnriddenTameKills": false,
+
+    // Range for RewardUnriddenTameKills, in Unreal units. One foundation is 300 units, so 15000
+    // is about 50 foundations. Not used while RewardUnriddenTameKills is false.
+    "TameKillMaxDistance": 15000,
+
+    // true: writes one line to ArkApi.log for every wild creature a player kills, including kills
+    // that pay nothing. The line shows the creature's class, parent class, name tag, level, diet,
+    // the type it matched and the points. Use it to find class names and tune the lists below.
+    "LogKills": false
+  },
+
+  // The message a player sees at the moment of the kill. ArkShop's own message follows at the
+  // next payout.
+  "Notifications": {
+    // true: show a message for each kill that pays. false: no message from this plugin.
+    "Enabled": true,
+
+    // false: on-screen notification. true: chat message from Sender.
+    "UseChat": false,
+
+    // Sender name for chat messages. Only used while UseChat is true.
+    "Sender": "Combat Rewards",
+
+    // The message text. Placeholders: {points} points earned, {creature} the creature's name,
+    // {level} its level, {type} the Name of the creature type it matched.
+    "Message": "+{points} points - {creature} (Lvl {level})",
+
+    // Seconds an on-screen notification stays up. Not used for chat messages.
+    "DisplayTime": 4.0,
+
+    // Size of an on-screen notification. Not used for chat messages.
+    "TextScale": 1.2
+  },
+
+  // What to do with a creature that is in neither Excluded nor any type's Creatures list. The
+  // game's carnivore flag decides which of the two settings applies. Each value is the Name of a
+  // type from CreatureTypes, or "" for no reward. Set both to "" for a strict whitelist.
+  "Fallback": {
+    // Unlisted carnivores, including modded predators, pay as this type.
+    "Carnivores": "Aggressive",
+
+    // Unlisted herbivores pay nothing. Herbivores that attack on sight, or fight back when hit,
+    // are listed by name below.
+    "Herbivores": ""
+  },
+
+  // The creature types. Rename them, add more, or remove them. Each type has:
+  //   Name        - shown by {type} and used by Fallback. Required, and each Name can be used once.
+  //   Creatures   - which creatures belong to the type.
+  //   LevelRanges - what a kill pays, by the creature's level.
+  //
+  // An entry in Creatures (and in Excluded) is one of:
+  //   "Rex_Character_BP"       a blueprint class name. The _C suffix is optional. It also matches
+  //                            every blueprint that inherits from it, such as tek and modded variants.
+  //   "Rex"                    a creature name tag, the same tags Game.ini uses.
+  //   "*_Character_BP_Corrupt" a wildcard on the class name or name tag. * is any run of
+  //                            characters, ? is exactly one.
+  //   "/Game/Mods/SomeMod/*"   anything containing / is matched against the blueprint path.
+  // Upper and lower case do not matter.
+  //
+  // The most specific match wins: the creature's own class is checked first, then its parent
+  // blueprint, and so on up. If one class matches several lists, Excluded wins, then the types in
+  // the order they appear here.
+  "CreatureTypes": [
+    {
+      // Apex predators, alphas and other creatures that are a real fight.
+      "Name": "Threatening",
+      "Creatures": [
+        "MegaRaptor_Character_BP",          // Alpha Raptor
+        "MegaCarno_Character_BP",           // Alpha Carnotaurus
+        "MegaRex_Character_BP",             // Alpha Rex
+        "MegaMegalodon_Character_BP",       // Alpha Megalodon
+        "Mosa_Character_BP_Mega",           // Alpha Mosasaur
+        "Mega_Tusoteuthis_Character_BP",    // Alpha Tusoteuthis
+        "Alpha_Leedsichthys_Character_BP",  // Alpha Leedsichthys
+        "Gigant_Character_BP",              // Giganotosaurus
+        "Carcha_Character_BP",              // Carcharodontosaurus
+        "Rex_Character_BP",                 // Rex, including Tek Rex
+        "Spino_Character_BP",               // Spinosaurus
+        "Yutyrannus_Character_BP",          // Yutyrannus
+        "Therizino_Character_BP",           // Therizinosaur: a herbivore, but it attacks on sight
+        "Mosa_Character_BP",                // Mosasaurus
+        "Tusoteuthis_Character_BP",         // Tusoteuthis
+        "Rhynio_Character_BP",              // Rhyniognatha
+        "Wyvern_Character_BP_Base",         // Every wyvern type (they share this base blueprint)
+        "Deathworm_Character_BP",           // Death Worm
+        "RockGolem_Character_BP",           // Rock Elemental
+        "Basilisk_Character_BP",            // Basilisk
+        "Crab_Character_BP",                // Karkinos
+        "RockDrake_Character_BP",           // Rock Drake
+        "Dreadnoughtus_Character_BP",       // Dreadnoughtus: a territorial herbivore that turns on large tames
+        "Xenomorph_Character_BP*"           // Reapers. The wildcard covers the King and Queen classes
+      ],
+
+      // The first range that contains the creature's level sets the points. A level that no range
+      // covers pays nothing. If two ranges overlap, the earlier one wins for the shared levels.
+      //   MinLevel - lowest level in the range. 1 if left out.
+      //   MaxLevel - highest level in the range. Leave it out for "this level and above".
+      //   Points   - points paid, before PointsMultiplier. Required. Whole number, 0 or more.
+      //
+      // These are 30-level steps for a wild level cap of 300, topping out at 30 points. Tek
+      // creatures, wyverns, rock drakes and shinies spawn above the cap, and cave and OSD creatures
+      // can pass level 600. Those are creature dense, so everything from 330 up pays the same.
+      "LevelRanges": [
+        { "MinLevel": 1, "MaxLevel": 29, "Points": 3 },
+        { "MinLevel": 30, "MaxLevel": 59, "Points": 5 },
+        { "MinLevel": 60, "MaxLevel": 89, "Points": 8 },
+        { "MinLevel": 90, "MaxLevel": 119, "Points": 10 },
+        { "MinLevel": 120, "MaxLevel": 149, "Points": 13 },
+        { "MinLevel": 150, "MaxLevel": 179, "Points": 15 },
+        { "MinLevel": 180, "MaxLevel": 209, "Points": 18 },
+        { "MinLevel": 210, "MaxLevel": 239, "Points": 20 },
+        { "MinLevel": 240, "MaxLevel": 269, "Points": 23 },
+        { "MinLevel": 270, "MaxLevel": 299, "Points": 25 },
+        { "MinLevel": 300, "MaxLevel": 329, "Points": 28 },  // The wild level cap and just above it
+        { "MinLevel": 330, "Points": 30 }                    // No MaxLevel: level 330 and above
+      ]
+    },
+    {
+      // Everything else that attacks players. Unlisted carnivores also land here through Fallback.
+      "Name": "Aggressive",
+      "Creatures": [
+        "*_Character_BP_Corrupt",    // Corrupted creatures, which are what OSD waves spawn
+        "Chalico_Character_BP",      // Chalicotherium: a herbivore, but it attacks on sight
+        "Bigfoot_Character_BP",      // Gigantopithecus, and the Yeti that is built on it
+        "Megatherium_Character_BP"   // Megatherium: enraged by insects, including ones you ride or carry
+      ],
+
+      // Same level steps as Threatening, topping out at 6 points. Points are whole numbers, so
+      // they rise every second step.
+      "LevelRanges": [
+        { "MinLevel": 1, "MaxLevel": 29, "Points": 1 },
+        { "MinLevel": 30, "MaxLevel": 59, "Points": 1 },
+        { "MinLevel": 60, "MaxLevel": 89, "Points": 2 },
+        { "MinLevel": 90, "MaxLevel": 119, "Points": 2 },
+        { "MinLevel": 120, "MaxLevel": 149, "Points": 3 },
+        { "MinLevel": 150, "MaxLevel": 179, "Points": 3 },
+        { "MinLevel": 180, "MaxLevel": 209, "Points": 4 },
+        { "MinLevel": 210, "MaxLevel": 239, "Points": 4 },
+        { "MinLevel": 240, "MaxLevel": 269, "Points": 5 },
+        { "MinLevel": 270, "MaxLevel": 299, "Points": 5 },
+        { "MinLevel": 300, "MaxLevel": 329, "Points": 6 },  // The wild level cap and just above it
+        { "MinLevel": 330, "Points": 6 }                    // No MaxLevel: level 330 and above
+      ]
+    },
+    {
+      // Herbivores that leave players alone until they are hit, then fight back. The player
+      // chooses to start these fights, so they pay less than Aggressive.
+      "Name": "Defensive",
+      "Creatures": [
+        "Trike_Character_BP",       // Triceratops
+        "Stego_Character_BP",       // Stegosaurus
+        "Sauropod_Character_BP",    // Brontosaurus
+        "Paracer_Character_BP",     // Paraceratherium
+        "Ankylo_Character_BP",      // Ankylosaurus
+        "Mammoth_Character_BP",     // Mammoth
+        "Rhino_Character_BP",       // Woolly Rhino
+        "Pachyrhino_Character_BP",  // Pachyrhinosaurus
+        "Pachy_Character_BP",       // Pachycephalosaurus
+        "Doed_Character_BP",        // Doedicurus
+        "Iguanodon_Character_BP",   // Iguanodon: fights back with a fast attack
+        "Beaver_Character_BP"       // Castoroides: nearby ones join in when one is hit or a dam is looted
+      ],
+
+      // Same level steps as Threatening, topping out at 3 points, which is half of what Aggressive
+      // pays. Points are whole numbers, so they rise every fourth step.
+      "LevelRanges": [
+        { "MinLevel": 1, "MaxLevel": 29, "Points": 1 },
+        { "MinLevel": 30, "MaxLevel": 59, "Points": 1 },
+        { "MinLevel": 60, "MaxLevel": 89, "Points": 1 },
+        { "MinLevel": 90, "MaxLevel": 119, "Points": 1 },
+        { "MinLevel": 120, "MaxLevel": 149, "Points": 2 },
+        { "MinLevel": 150, "MaxLevel": 179, "Points": 2 },
+        { "MinLevel": 180, "MaxLevel": 209, "Points": 2 },
+        { "MinLevel": 210, "MaxLevel": 239, "Points": 2 },
+        { "MinLevel": 240, "MaxLevel": 269, "Points": 3 },
+        { "MinLevel": 270, "MaxLevel": 299, "Points": 3 },
+        { "MinLevel": 300, "MaxLevel": 329, "Points": 3 },  // The wild level cap and just above it
+        { "MinLevel": 330, "Points": 3 }                    // No MaxLevel: level 330 and above
+      ]
+    },
+    {
+      // Rare giants with a huge health pool that hit hard once the fight starts.
+      "Name": "Colossal",
+      "Creatures": [
+        "Titanosaur_Character_BP"   // Titanosaur
+      ],
+
+      // One flat payout. A wild Titanosaur only spawns at a very low level and its health and
+      // damage do not grow with level, so paying by level would give it almost nothing.
+      "LevelRanges": [
+        { "MinLevel": 1, "Points": 50 }                      // No MaxLevel: every level
+      ]
+    }
+  ],
+
+  // Creatures that never pay, written the same way as Creatures above: fish, small passive
+  // animals, skittish flyers and bees. Many of these are carnivores, so without this list the
+  // Fallback section would pay for them as Aggressive.
+  "Excluded": [
+    "Coel_Character_BP",           // Coelacanth
+    "Salmon_Character_BP",         // Sabertooth Salmon
+    "Trilobite_Character",         // Trilobite
+    "Ammonite_Character",          // Ammonite
+    "Dolphin_Character_BP",        // Ichthyosaurus
+    "Basilosaurus_Character_BP",   // Basilosaurus
+    "Liopleurodon_Character_BP",   // Liopleurodon
+    "Otter_Character_BP",          // Otter
+    "Diplocaulus_Character_BP",    // Diplocaulus
+    "Hesperornis_Character_BP",    // Hesperornis
+    "Kairuku_Character_BP",        // Kairuku
+    "Ptero_Character_BP",          // Pteranodon
+    "Quetz_Character_BP",          // Quetzal
+    "Tapejara_Character_BP",       // Tapejara
+    "Pela_Character_BP",           // Pelagornis
+    "Archa_Character_BP",          // Archaeopteryx
+    "Dimorph_Character_BP",        // Dimorphodon
+    "Ichthyornis_Character_BP",    // Ichthyornis
+    "Vulture_Character_BP",        // Vulture
+    "Oviraptor_Character_BP",      // Oviraptor
+    "Pegomastax_Character_BP",     // Pegomastax
+    "DungBeetle_Character_BP",     // Dung Beetle
+    "Jerboa_Character_BP",         // Jerboa
+    "LanternPug_Character_BP",     // Bulbdog
+    "LanternBird_Character_BP",    // Featherlight
+    "LanternLizard_Character_BP",  // Glowtail
+    "LanternGoat_Character_BP",    // Shinehorn
+    "Dodo_Character_BP",           // Dodo
+    "Bee_Character_BP",            // Giant Bee. Hives respawn drones without end
+    "Bee_Queen_Character_BP",      // Giant Queen Bee
+
+    // ASE server mods (BetterDinos, NoUntameables, AdditionalAberrantDinos) and a few vanilla
+    // creatures, carried over from the old KillRewards DinoBlacklist. Written as full blueprint paths,
+    // so each entry matches only that exact blueprint. This matters where a mod reuses a vanilla
+    // class name (BetterDinos' Compy and Aberrant Manta): the vanilla creature is not affected.
+    "Blueprint'/Game/Mods/BetterDinosTest/Leech/BDLeech_Character.BDLeech_Character'",
+    "Blueprint'/Game/Mods/BetterDinosTest/Leech/BDLeech_Character_Diseased.BDLeech_Character_Diseased'",
+    "Blueprint'/Game/Mods/BetterDinosTest/Lamprey/BDLamprey_Character.BDLamprey_Character'",
+    "Blueprint'/Game/Mods/BetterDinosTest/Fish/BDCoel_Character_BP.BDCoel_Character_BP'",
+    "Blueprint'/Game/Mods/BetterDinosTest/Fish/BDCoel_Character_BP_Aberrant.BDCoel_Character_BP_Aberrant'",
+    "Blueprint'/Game/Mods/BetterDinosTest/Fish/BDCoel_Character_BP_Ocean.BDCoel_Character_BP_Ocean'",
+    "Blueprint'/Game/Mods/BetterDinosTest/Fish/BDSalmon_Character_Lunar.BDSalmon_Character_Lunar'",
+    "Blueprint'/Game/Mods/BetterDinosTest/Fish/BDSalmon_Character_Lunar_Rare.BDSalmon_Character_Lunar_Rare'",
+    "Blueprint'/Game/Mods/BetterDinosTest/Fish/BDSalmon_Character.BDSalmon_Character'",
+    "Blueprint'/Game/Mods/BetterDinosTest/Fish/BDSalmon_Character_Aberrant.BDSalmon_Character_Aberrant'",
+    "Blueprint'/Game/Mods/BetterDinosTest/Fish/BDPiranha_Character_BP.BDPiranha_Character_BP'",
+    "Blueprint'/Game/Mods/BetterDinosTest/Fish/BDPiranha_Character_BP_Aberrant.BDPiranha_Character_BP_Aberrant'",
+    "Blueprint'/Game/PrimalEarth/Dinos/Anglerfish/Angler_Character_BP_Aberrant.Angler_Character_BP_Aberrant'",
+    "Blueprint'/Game/PrimalEarth/Dinos/Anglerfish/Angler_Character_BP.Angler_Character_BP'",
+    "Blueprint'/Game/Mods/NoUntameables/Ant/Ant_Character_BP_Minion.Ant_Character_BP_Minion'",
+    "Blueprint'/Game/Mods/NoUntameables/Ant/FlyingAnt_Character_BP_Minion.FlyingAnt_Character_BP_Minion'",
+    "Blueprint'/Game/Mods/NoUntameables/Ant/FlyingAnt_Character_BP_Tamed.FlyingAnt_Character_BP_Tamed'",
+    "Blueprint'/Game/Mods/NoUntameables/Ant/Ant_Character_BP_Tamed.Ant_Character_BP_Tamed'",
+    "Blueprint'/Game/Mods/BetterDinosTest/Trilobite/BDTrilobite_Character.BDTrilobite_Character'",
+    "Blueprint'/Game/Mods/BetterDinosTest/Trilobite/BDTrilobite_Character_Aberrant.BDTrilobite_Character_Aberrant'",
+    "Blueprint'/Game/PrimalEarth/Dinos/Dodo/Dodo_Character_BP.Dodo_Character_BP'",
+    "Blueprint'/Game/PrimalEarth/Dinos/Dodo/Dodo_Character_BP_Aberrant.Dodo_Character_BP_Aberrant'",
+    "Blueprint'/Game/PrimalEarth/Dinos/Achatina/Achatina_Character_BP.Achatina_Character_BP'",
+    "Blueprint'/Game/PrimalEarth/Dinos/Achatina/Achatina_Character_BP_Aberrant.Achatina_Character_BP_Aberrant'",
+    "Blueprint'/Game/Mods/BetterDinosTest/Manta/Manta_Character_BP_Aberrant.Manta_Character_BP_Aberrant'",
+    "Blueprint'/Game/Mods/BetterDinosTest/Compy/Compy_Character_BP.Compy_Character_BP'",
+    "Blueprint'/Game/PrimalEarth/Dinos/Sheep/Sheep_Character_BP.Sheep_Character_BP'",
+    "Blueprint'/Game/PrimalEarth/Dinos/Sheep/Sheep_Character_BP_Aberrant.Sheep_Character_BP_Aberrant'",
+    "Blueprint'/Game/PrimalEarth/Dinos/Para/Para_Character_BP.Para_Character_BP'",
+    "Blueprint'/Game/Genesis2/Dinos/BiomeVariants/Para_Character_BP_Eden.Para_Character_BP_Eden'",
+    "Blueprint'/Game/PrimalEarth/Dinos/Para/Para_Character_BP_Aberrant.Para_Character_BP_Aberrant'",
+    "Blueprint'/Game/PrimalEarth/Dinos/Para/BionicPara_Character_BP.BionicPara_Character_BP'",
+    "Blueprint'/Game/Genesis/Dinos/BiomeVariants/BogPara/Bog_Para_Character_BP.Bog_Para_Character_BP'",
+    "Blueprint'/Game/PrimalEarth/Dinos/Phiomia/Phiomia_Character_BP.Phiomia_Character_BP'",
+    "Blueprint'/Game/Mods/AdditionalAberrantDinos/Jerboa/Jerboa_Character_BP_Aberrant.Jerboa_Character_BP_Aberrant'",
+    "Blueprint'/Game/ScorchedEarth/Dinos/Jerboa/Jerboa_Character_BP.Jerboa_Character_BP'",
+    "Blueprint'/Game/Mods/AdditionalAberrantDinos/Phiomia/Phiomia_Character_BP_Aberrant.Phiomia_Character_BP_Aberrant'",
+    "Blueprint'/Game/PrimalEarth/Dinos/Turtle/Turtle_Character_BP.Turtle_Character_BP'",
+    "Blueprint'/Game/PrimalEarth/Dinos/Turtle/Turtle_Character_BP_Aberrant.Turtle_Character_BP_Aberrant'",
+    "Blueprint'/Game/PrimalEarth/Dinos/Lystrosaurus/Lystro_Character_BP.Lystro_Character_BP'",
+    "Blueprint'/Game/PrimalEarth/Dinos/Lystrosaurus/Lystro_Character_BP_Aberrant.Lystro_Character_BP_Aberrant'",
+    "Blueprint'/Game/Mods/BetterDinosTest/Beetle/DungBeetle_Character_BP.DungBeetle_Character_BP'",
+    "Blueprint'/Game/Mods/BetterDinosTest/Beetle/DungBeetle_Character_BP_Aberrant.DungBeetle_Character_BP_Aberrant'",
+    "Blueprint'/Game/PrimalEarth/Dinos/Kairuku/Kairuku_Character_BP.Kairuku_Character_BP'",
+    "Blueprint'/Game/Mods/BetterDinosTest/Oviraptor/Oviraptor_Character_BP.Oviraptor_Character_BP'",
+    "Blueprint'/Game/Mods/AdditionalAberrantDinos/Oviraptor/Oviraptor_Character_BP_Aberrant.Oviraptor_Character_BP_Aberrant'",
+    "Blueprint'/Game/Mods/NoUntameables/Ammonite/Ammonite_Character_Tameable.Ammonite_Character_Tameable'",
+    "Blueprint'/Game/Mods/NoUntameables/Ammonite/Ammonite_Character_Aberrant_Tameable.Ammonite_Character_Aberrant_Tameable'",
+    "Blueprint'/Game/Mods/NoUntameables/Ammonite/Ocean_Ammonite_Character_Tameable.Ocean_Ammonite_Character_Tameable'",
+    "Blueprint'/Game/Mods/NoUntameables/Ammonite/Ghost_Ammonite_Character.Ghost_Ammonite_Character'",
+    "Blueprint'/Game/Mods/NoUntameables/JugBug/Jugbug_Water_Character_BP_Tameable.Jugbug_Water_Character_BP_Tameable'",
+    "Blueprint'/Game/Mods/NoUntameables/JugBug/Jugbug_Water_Character_BP_Aberrant_Tameable.Jugbug_Water_Character_BP_Aberrant_Tameable'",
+    "Blueprint'/Game/Mods/NoUntameables/JugBug/Jugbug_Oil_Character_BP_Tameable.Jugbug_Oil_Character_BP_Tameable'",
+    "Blueprint'/Game/Mods/NoUntameables/JugBug/Jugbug_Oil_Character_BP_Aberrant_Tameable.Jugbug_Oil_Character_BP_Aberrant_Tameable'",
+    "Blueprint'/Game/Mods/NoUntameables/JugBug/Jugbug_Element_Character_BP_Tameable.Jugbug_Element_Character_BP_Tameable'",
+    "Blueprint'/Game/Mods/NoUntameables/JugBug/Bog_Jugbug_Character_BP_Tameable.Bog_Jugbug_Character_BP_Tameable'",
+    "Blueprint'/Game/Mods/NoUntameables/JugBug/Jugbug_Character_BP_Rockwell_Tameable.Jugbug_Character_BP_Rockwell_Tameable'",
+    "Blueprint'/Game/Mods/NoUntameables/Leedsichthys/Leedsichthys_Character_BP_Tameable.Leedsichthys_Character_BP_Tameable'",
+    "Blueprint'/Game/Mods/NoUntameables/Dragonfly/Dragonfly_Character_BP_Tameable.Dragonfly_Character_BP_Tameable'",
+    "Blueprint'/Game/Mods/NoUntameables/Dragonfly/Dragonfly_Character_BP_Aberrant_Tameable.Dragonfly_Character_BP_Aberrant_Tameable'",
+    "Blueprint'/Game/Mods/BetterDinosTest/Fish/BDDragonfly_Character_BP_Aberrant.BDDragonfly_Character_BP_Aberrant'",
+    "Blueprint'/Game/Mods/BetterDinosTest/Fish/BDDragonfly_Character_BP.BDDragonfly_Character_BP'"
+  ]
+}

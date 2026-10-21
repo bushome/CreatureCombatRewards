@@ -2,8 +2,8 @@
 
 // Pure reward logic for CreatureCombatRewards: config parsing, creature classification and point lookup.
 //
-// This header deliberately has no dependency on the game or on AsaApi game types (only on the
-// nlohmann json.hpp that ships with AsaApi), so it can be compiled and unit-tested on any machine.
+// This header deliberately has no dependency on the game or on server API game types (only on the
+// nlohmann json.hpp that ships with AsaApi and AseApi), so it can be compiled and unit-tested on any machine.
 // See tests/logic_tests.cpp.
 
 #include <algorithm>
