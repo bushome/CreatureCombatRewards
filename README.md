@@ -18,7 +18,7 @@
                   | |\ \  __/\ V  V / (_| | | | (_| \__ \     |\(%()*^^()^\
                   \_| \_\___| \_/\_/ \__,_|_|  \__,_|___/    %| |-%-------|
                                                             % \ | %  ))   |
-                                               ejm97  %%%%  %  \|%________|
+                                                      %%%%  %  \|%________|
  ```
 
 Server plugin that awards ArkShop points for killing wild creatures, by creature type and level range.
