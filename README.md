@@ -24,6 +24,8 @@
 Server plugin that awards ArkShop points for killing wild creatures, by creature type and level range.
 Passive creatures can be excluded so they never pay.
 
+Status: complete. Both versions are tested and running in production. This software will receive only bug fixes for future game state version updates. No new feature sets will be added beyond what is presented here.
+
 | Folder | Game | Server API (submodule) |
 |---|---|---|
 | [`ASA`](ASA/README.md) | ARK: Survival Ascended | [AsaApi](https://github.com/ArkServerApi/AsaApi) at `ASA/extern/AsaApi` |
