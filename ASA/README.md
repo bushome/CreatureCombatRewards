@@ -41,7 +41,8 @@ path. No ArkShop import library is needed: ArkShop's `AddPoints` is looked up in
 at runtime.
 
 The result is `out\CreatureCombatRewards\`, containing `CreatureCombatRewards.dll`, its `.pdb`,
-`PluginInfo.json`, `config.json` and `config.commented.json`.
+`PluginInfo.json`, `config.json`, `config.commented.json` and `THIRD-PARTY-NOTICES.md`. Keep the notice file(s) with the DLL
+when redistributing the plugin.
 
 Build against the AsaApi version your servers run. To move to a different AsaApi release, check out that
 tag in the submodule and commit the new submodule pointer:

@@ -38,7 +38,8 @@ No vcpkg packages are needed: ArkServerApi bundles the fmt copy its headers use.
 is needed either: ArkShop's `AddPoints` is looked up in the loaded `ArkShop.dll` at runtime.
 
 The result is `out\CreatureCombatRewards\`, containing `CreatureCombatRewards.dll`, its `.pdb`,
-`PluginInfo.json`, `config.json` and `config.commented.json`.
+`PluginInfo.json`, `config.json`, `config.commented.json` and `THIRD-PARTY-NOTICES.md`. Keep the notice file(s) with the DLL
+when redistributing the plugin.
 
 Build against the ArkServerApi version your servers run. To move to a different release, check out that
 tag in the submodule and commit the new submodule pointer:
